@@ -1,19 +1,24 @@
-import React, { useEffect, useState } from "react";
-import Header from "./Header";
-import Search from "./Search";
-import MessageList from "./MessageList";
-import NewMessage from "./NewMessage";
+import React, { useEffect, useState } from 'react';
+import Header from './Header';
+import Search from './Search';
+import MessageList from './MessageList';
+import NewMessage from './NewMessage';
 
-const testUser = { username: "Duane" };
+const testUser = { username: 'Duane' };
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [messages, setMessages] = useState([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5555/messages")
-      .then((r) => r.json())
+    fetch('http://127.0.0.1:5555/messages')
+      .then((r) => {
+        if (r.ok) {
+          return r.json();
+        }
+        throw r;
+      })
       .then((messages) => setMessages(messages));
   }, []);
 
@@ -37,21 +42,28 @@ function App() {
     setMessages(updatedMessages);
   }
 
-  const displayedMessages = messages.filter((message) =>
-    message.body.toLowerCase().includes(search.toLowerCase())
-  );
+  const displayedMessages = messages.filter((message) => message.body.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <main className={isDarkMode ? "dark-mode" : ""}>
-      <Header isDarkMode={isDarkMode} onToggleDarkMode={setIsDarkMode} />
-      <Search search={search} onSearchChange={setSearch} />
+    <main className={isDarkMode ? 'dark-mode' : ''}>
+      <Header
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={setIsDarkMode}
+      />
+      <Search
+        search={search}
+        onSearchChange={setSearch}
+      />
       <MessageList
         messages={displayedMessages}
         currentUser={testUser}
         onMessageDelete={handleDeleteMessage}
         onUpdateMessage={handleUpdateMessage}
       />
-      <NewMessage currentUser={testUser} onAddMessage={handleAddMessage} />
+      <NewMessage
+        currentUser={testUser}
+        onAddMessage={handleAddMessage}
+      />
     </main>
   );
 }
